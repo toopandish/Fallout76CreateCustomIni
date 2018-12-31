@@ -1,7 +1,32 @@
 """ This module creates a fallout76Custom.ini file from the installed mods in the data directory """
 
+import argparse
+import errno
 import os
 from os import walk
+
+# Set the default home and mod directories
+HOME_DIR = os.path.expanduser("~") + "\\Documents\\My Games\\Fallout 76"
+FILENAME = 'Fallout76Custom.ini'
+
+# Get arguments from the user
+PARSER = argparse.ArgumentParser(description='This program will automatically create the '
+                                 + 'Fallout76Custom.ini file for you. In most cases the '
+                                 + 'default arguments will be fine.')
+PARSER.add_argument('--datafolder', default='.',
+                    help='Specify fallout76\'s data folder location (Default: current directory)')
+PARSER.add_argument('--inifolder', default=HOME_DIR,
+                    help='Specify the folder where Fallout76Custom.ini lives'+
+                    ' (Default: ' + HOME_DIR + ')')
+PARSER.add_argument('--inifilename', default=FILENAME,
+                    help='Specify the filename for the ini (Default: ' + FILENAME + ')')
+
+ARGS = PARSER.parse_args()
+
+# Assign arguments to variables
+MODS_DIR = ARGS.datafolder
+FILENAME = ARGS.inifilename
+HOME_DIR = ARGS.inifolder + "\\" + FILENAME
 
 # Configuration arrays, these are mods that should go in specific
 # lists, all other go in sResourceArchive2List
@@ -77,8 +102,13 @@ RESOURCE_MAP = [
 #The array index from the RESOURCE_MAP for sResourceArchive2List
 SR_2LIST_INDEX = 3
 
-# Get the home directory of the current user
-HOME_DIR = os.path.expanduser("~") + "\\Documents\\My Games\\Fallout 76\\fallout76Custom.ini"
+# Create any missing folders
+if not os.path.exists(os.path.dirname(HOME_DIR)):
+    try:
+        os.makedirs(os.path.dirname(HOME_DIR))
+    except OSError as exc: # Guard against race condition
+        if exc.errno != errno.EEXIST:
+            raise
 
 # Open the Custom.ini file for writing
 CUSTOM_INI_FILE = open(HOME_DIR, "w+")
@@ -87,7 +117,7 @@ CUSTOM_INI_FILE = open(HOME_DIR, "w+")
 CUSTOM_INI_FILE.write("[Archive]\r\n")
 
 # Loop through the resource map and add mods to the correct places
-for (dirpath, dirnames, filenames) in walk('data'):
+for (dirpath, dirnames, filenames) in walk(MODS_DIR):
     for file in filenames:
         # Make sure the file is not an official file (starts with "SeventySix")
         # and is a ba2 (file extension)
