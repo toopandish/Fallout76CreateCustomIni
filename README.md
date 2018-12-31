@@ -3,7 +3,7 @@ Simple script to create a Fallout76Custom.ini for .ba2 mods installed
 
 ## Instructions
   * Make a backup of your current Fallout76Custom.ini if you have one
-  * Copy the .py or .exe file to your fallout76 directory
+  * Copy the .py or .exe file to your fallout76/data directory
   * Run the file from the command line or vortex using:
     * for the .py: `py createCustomIni.py`
     * for the .exe: `createCustomIni.exe`
