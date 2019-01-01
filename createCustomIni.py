@@ -121,7 +121,7 @@ for (dirpath, dirnames, filenames) in walk(MODS_DIR):
     for file in filenames:
         # Make sure the file is not an official file (starts with "SeventySix")
         # and is a ba2 (file extension)
-        if (file[0:10] != 'SeventySix' and file[-4:] == '.ba2'):
+        if (file[0:10] != 'SeventySix' and file[-4:].lower() == '.ba2'):
             FOUND = False
             for RESOURCE in RESOURCE_MAP:
                 if file in RESOURCE['mods']:

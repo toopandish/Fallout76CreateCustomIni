@@ -3,3 +3,6 @@ dist
 build
 *.spec
 *.pyc
+*.7z
+*.omod
+*.fomod
