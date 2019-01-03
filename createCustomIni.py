@@ -3,6 +3,9 @@
 import argparse
 import errno
 import os
+
+#madogs: I *think* this is what I need to pull in
+import ctypes
 from os import walk
 
 # Set the default home and mod directories
@@ -21,12 +24,21 @@ PARSER.add_argument('--inifolder', default=HOME_DIR,
 PARSER.add_argument('--inifilename', default=FILENAME,
                     help='Specify the filename for the ini (Default: ' + FILENAME + ')')
 
+# madogs: argument to run program as an administrator
+# madogs: I'm uncertain of boolean syntax... case sensitive? is the user input case sensitive as well?
+PARSER.add_argument('--runasadmin', default=False,
+                    help='Runs as an admin. Use when Fallout 76'
+                    + 'installed in UAC location.'
+
 ARGS = PARSER.parse_args()
 
 # Assign arguments to variables
 MODS_DIR = ARGS.datafolder
 FILENAME = ARGS.inifilename
 HOME_DIR = ARGS.inifolder + "\\" + FILENAME
+                    
+# madogs: not certain of the syntax here
+IS_ADMIN = ARGS.runasadmin
 
 # Configuration arrays, these are mods that should go in specific
 # lists, all other go in sResourceArchive2List
@@ -102,43 +114,49 @@ RESOURCE_MAP = [
 #The array index from the RESOURCE_MAP for sResourceArchive2List
 SR_2LIST_INDEX = 3
 
-# Create any missing folders
-if not os.path.exists(os.path.dirname(HOME_DIR)):
-    try:
-        os.makedirs(os.path.dirname(HOME_DIR))
-    except OSError as exc: # Guard against race condition
-        if exc.errno != errno.EEXIST:
-            raise
+# madogs: checks if user set --runasadmin=True
+if IS_ADMIN():
+    # Re-run the program with admin rights
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+else:
+    # madogs: main program
+    # Create any missing folders
+    if not os.path.exists(os.path.dirname(HOME_DIR)):
+        try:
+            os.makedirs(os.path.dirname(HOME_DIR))
+        except OSError as exc: # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
 
-# Open the Custom.ini file for writing
-CUSTOM_INI_FILE = open(HOME_DIR, "w+")
+    # Open the Custom.ini file for writing
+    CUSTOM_INI_FILE = open(HOME_DIR, "w+")
 
-# write the section header to the file
-CUSTOM_INI_FILE.write("[Archive]\r\n")
+    # write the section header to the file
+    CUSTOM_INI_FILE.write("[Archive]\r\n")
 
-# Loop through the resource map and add mods to the correct places
-for (dirpath, dirnames, filenames) in walk(MODS_DIR):
-    for file in filenames:
-        # Make sure the file is not an official file (starts with "SeventySix")
-        # and is a ba2 (file extension)
-        if (file[0:10] != 'SeventySix' and file[-4:].lower() == '.ba2'):
-            FOUND = False
-            for RESOURCE in RESOURCE_MAP:
-                if file in RESOURCE['mods']:
-                    RESOURCE['found_mods'].append(file)
-                    FOUND = True
+    # Loop through the resource map and add mods to the correct places
+    for (dirpath, dirnames, filenames) in walk(MODS_DIR):
+        for file in filenames:
+            # Make sure the file is not an official file (starts with "SeventySix")
+            # and is a ba2 (file extension)
+            if (file[0:10] != 'SeventySix' and file[-4:].lower() == '.ba2'):
+                FOUND = False
+                for RESOURCE in RESOURCE_MAP:
+                    if file in RESOURCE['mods']:
+                        RESOURCE['found_mods'].append(file)
+                        FOUND = True
 
-            # If a mod doesn't appear in the one of the other mod lists, add it to the default
-            if not FOUND:
-                RESOURCE_MAP[SR_2LIST_INDEX]['found_mods'].append(file)
-    break
+                # If a mod doesn't appear in the one of the other mod lists, add it to the default
+                if not FOUND:
+                    RESOURCE_MAP[SR_2LIST_INDEX]['found_mods'].append(file)
+        break
 
-# Loop through the resource map and add the correct lines to the ini file
-for RESOURCE in RESOURCE_MAP:
-    if RESOURCE['found_mods']:
-        CUSTOM_INI_FILE.write(
-            RESOURCE['filename'] + " = %s\r\n"
-            % ', '.join(RESOURCE['default_mods'] + RESOURCE['found_mods'])
-        )
+    # Loop through the resource map and add the correct lines to the ini file
+    for RESOURCE in RESOURCE_MAP:
+        if RESOURCE['found_mods']:
+            CUSTOM_INI_FILE.write(
+                RESOURCE['filename'] + " = %s\r\n"
+                % ', '.join(RESOURCE['default_mods'] + RESOURCE['found_mods'])
+            )
 
-CUSTOM_INI_FILE.close()
+    CUSTOM_INI_FILE.close()
