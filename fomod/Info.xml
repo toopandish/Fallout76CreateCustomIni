@@ -3,7 +3,7 @@
   <Description>Creates a Fallut76Custom.ini based on the installed .ba2 files</Description>
   <Author>urbanpanda</Author>
   <Website>https://github.com/toopandish/Fallout76CreateCustomIni</Website>
-  <Version>1.4</Version>
+  <Version>1.5</Version>
   <Groups>
     <element>Tools and Utilities</element>
   </Groups>

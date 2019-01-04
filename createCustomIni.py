@@ -1,12 +1,11 @@
 """ This module creates a fallout76Custom.ini file from the installed mods in the data directory """
 
 import argparse
+import ctypes
 import errno
 import os
-
-#madogs: I *think* this is what I need to pull in
-import ctypes
 from os import walk
+import sys
 
 # Set the default home and mod directories
 HOME_DIR = os.path.expanduser("~") + "\\Documents\\My Games\\Fallout 76"
@@ -23,12 +22,9 @@ PARSER.add_argument('--inifolder', default=HOME_DIR,
                     ' (Default: ' + HOME_DIR + ')')
 PARSER.add_argument('--inifilename', default=FILENAME,
                     help='Specify the filename for the ini (Default: ' + FILENAME + ')')
-
-# madogs: argument to run program as an administrator
-# madogs: I'm uncertain of boolean syntax... case sensitive? is the user input case sensitive as well?
-PARSER.add_argument('--runasadmin', default=False,
+PARSER.add_argument('--runasadmin', action="store_true",
                     help='Runs as an admin. Use when Fallout 76'
-                    + 'installed in UAC location.'
+                    + 'installed in UAC location.')
 
 ARGS = PARSER.parse_args()
 
@@ -36,8 +32,6 @@ ARGS = PARSER.parse_args()
 MODS_DIR = ARGS.datafolder
 FILENAME = ARGS.inifilename
 HOME_DIR = ARGS.inifolder + "\\" + FILENAME
-                    
-# madogs: not certain of the syntax here
 IS_ADMIN = ARGS.runasadmin
 
 # Configuration arrays, these are mods that should go in specific
@@ -115,11 +109,10 @@ RESOURCE_MAP = [
 SR_2LIST_INDEX = 3
 
 # madogs: checks if user set --runasadmin=True
-if IS_ADMIN():
+if IS_ADMIN:
     # Re-run the program with admin rights
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 else:
-    # madogs: main program
     # Create any missing folders
     if not os.path.exists(os.path.dirname(HOME_DIR)):
         try:
