@@ -15,6 +15,7 @@ Simple script to create a Fallout76Custom.ini for .ba2 mods installed
   * __--inifolder__ Specify the folder where Fallout76Custom.ini lives (Default: C:\Users\[*current_user*]\Documents\My Games\Fallout 76)
   * __--inifilename__ Specify the filename for the ini (Default: Fallout76Custom.ini)
   * __--runasadmin__ Run the program as administrator, will ask for permission
+  * __--copyinicontents__ Copy a file's contents in to your .ini
 
 ## Info
 I don't normally do python.. or windows... so sorry...
