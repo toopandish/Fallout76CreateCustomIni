@@ -25,6 +25,8 @@ PARSER.add_argument('--inifilename', default=FILENAME,
 PARSER.add_argument('--runasadmin', action="store_true",
                     help='Runs as an admin. Use when Fallout 76'
                     + 'installed in UAC location.')
+PARSER.add_argument('--copyinicontents',
+                    help='Copy a file\'s contents into your custom .ini')
 
 ARGS = PARSER.parse_args()
 
@@ -33,6 +35,7 @@ MODS_DIR = ARGS.datafolder
 FILENAME = ARGS.inifilename
 HOME_DIR = ARGS.inifolder + "\\" + FILENAME
 IS_ADMIN = ARGS.runasadmin
+IMPORT_INI = ARGS.copyinicontents
 
 # Configuration arrays, these are mods that should go in specific
 # lists, all other go in sResourceArchive2List
@@ -152,5 +155,11 @@ else:
                 RESOURCE['filename'] + " = %s\r\n"
                 % ', '.join(RESOURCE['default_mods'] + RESOURCE['found_mods'])
             )
+
+    # Copy contents of a custom file in to the custom.ini
+    if IMPORT_INI:
+        IMPORT_FILE = open(IMPORT_INI, "r")
+        CUSTOM_INI_FILE.write("\r\n")
+        CUSTOM_INI_FILE.write(IMPORT_FILE.read())
 
     CUSTOM_INI_FILE.close()
