@@ -3,7 +3,7 @@
   <Description>Creates a Fallut76Custom.ini based on the installed .ba2 files</Description>
   <Author>urbanpanda</Author>
   <Website>https://www.nexusmods.com/fallout76/mods/201</Website>
-  <Version>1.5</Version>
+  <Version>1.6.0</Version>
   <Groups>
     <element>Tools and Utilities</element>
   </Groups>

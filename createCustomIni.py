@@ -101,7 +101,10 @@ RESOURCE_MAP = [
     },
     {
         'filename': 'sResourceArchive2List',
-        'mods': [],
+        'mods': [
+            'PerkLoadoutManager.ba2',
+            'ChatMod.ba2',
+        ],
         'default_mods': [
             'SeventySix - ATX_Main.ba2',
             'SeventySix - ATX_Textures.ba2'
@@ -151,15 +154,32 @@ else:
     # Loop through the resource map and add the correct lines to the ini file
     for RESOURCE in RESOURCE_MAP:
         if RESOURCE['found_mods']:
+            # [TODO] Get the array intersection of the `mods` to the found mods
+            # to make a sorted list based on what's in the map
+            FOUND = frozenset(RESOURCE['found_mods'])
+            MODS = RESOURCE['mods']
+            MOD_LIST = [mod for mod in MODS if mod in FOUND]
+            MOD_LIST = ', ' + ', '.join(MOD_LIST)
+
+            # Get any mods that don't show up in the mods list (for the default list)
+            DIFF_LIST = [item for item in FOUND if item not in MODS]
+            if DIFF_LIST:
+                DIFF_LIST.sort()
+                DIFF_LIST = ', ' + ', '.join(DIFF_LIST)
+            else:
+                DIFF_LIST = ''
+
+            # Make the default list a string
+            DEFAULT_MODS = ', '.join(RESOURCE['default_mods'])
+
             CUSTOM_INI_FILE.write(
                 RESOURCE['filename'] + " = %s\r\n"
-                % ', '.join(RESOURCE['default_mods'] + RESOURCE['found_mods'])
+                % (DEFAULT_MODS + MOD_LIST + DIFF_LIST)
             )
 
     # Copy contents of a custom file in to the custom.ini
     if IMPORT_INI:
         IMPORT_FILE = open(IMPORT_INI, "r")
-        CUSTOM_INI_FILE.write("\r\n")
         CUSTOM_INI_FILE.write(IMPORT_FILE.read())
 
     CUSTOM_INI_FILE.close()
