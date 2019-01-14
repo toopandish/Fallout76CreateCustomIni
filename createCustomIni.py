@@ -40,6 +40,7 @@ RESOURCE_MAP = [
     {
         'filename': 'sResourceStartUpArchiveList',
         'mods': [
+            'BakaFile - Main.ba2',
             'IconTag.ba2',
             'IconSortingRatmonkeys.ba2',
             'MMM - Country Roads.ba2',
