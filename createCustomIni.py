@@ -106,8 +106,9 @@ RESOURCE_MAP = [
             'ChatMod.ba2',
         ],
         'default_mods': [
-            'SeventySix - ATX_Main.ba2',
-            'SeventySix - ATX_Textures.ba2'
+            'SeventySix - 00UpdateMain.ba2',
+            'SeventySix - 00UpdateStream.ba2',
+            'SeventySix - 00UpdateTextures.ba2'
             ],
         'found_mods': []
     },
